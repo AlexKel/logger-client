@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  microservice:
+    build: .
+    command: /bin/sh -c "go-wrapper download && go-wrapper install && go test"
+    volumes:
+      - .:/go/src/gitlab.devops.ukfast.co.uk/fastbase/logger-client
+    environment:
+      - DEBUG=${DEBUG}
+      - MQ_CONN_STRING=${MQ_CONN_STRING}
+

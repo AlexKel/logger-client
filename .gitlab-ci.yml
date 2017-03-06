@@ -1,0 +1,15 @@
+stages:
+  - test
+
+variables:
+  MQ_CONN_STRING: "amqp://guest:guest@172.16.27.7/"
+  DEBUG: "1"
+
+test: 
+  stage: test
+  script:
+    - whoami
+    - docker-compose up
+
+after_script:
+  - docker-compose rm -f | true
