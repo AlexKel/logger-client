@@ -18,11 +18,16 @@ var (
 
 func main() {}
 
+// LoggerClient is the strucutre of the logger NewClient
+// You can use this logger client to send logs ot the fastbase logger service
 type LoggerClient struct {
 	LogSet  string
 	LogType string
 }
 
+// NewClient creates a new client and predefined Log Set and logType
+// logSet Is the default log set (elastic index)
+// logType Is the type of the log (elastic type)
 func NewClient(logSet string, logType string) *LoggerClient {
 	conn = dial()
 	ch = createChannel(conn)
@@ -30,6 +35,7 @@ func NewClient(logSet string, logType string) *LoggerClient {
 	return &LoggerClient{LogSet: logSet, LogType: logType}
 }
 
+// LogWithType allows you to log and override default logType paramter of the logger client
 func (c *LoggerClient) LogWithType(logType string, log map[string]interface{}) error {
 	body := map[string]interface{}{
 		"log_set":  c.LogSet,
@@ -55,6 +61,7 @@ func (c *LoggerClient) LogWithType(logType string, log map[string]interface{}) e
 	return err
 }
 
+// Log allows you to log a message with default logType
 func (c *LoggerClient) Log(log map[string]interface{}) error {
 	return c.LogWithType(c.LogType, log)
 }
