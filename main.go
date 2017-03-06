@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 )
 
 var (
-	uri   = "amqp://guest:guest@localhost:5672/"
+	uri   = ""
 	queue = "logs"
 	conn  *amqp.Connection
 	ch    *amqp.Channel
@@ -25,10 +26,11 @@ type LoggerClient struct {
 	LogType string
 }
 
-// NewClient creates a new client and predefined Log Set and logType
+// NewClient creates a new client and predefined Log Set and logTypego bu
 // logSet Is the default log set (elastic index)
 // logType Is the type of the log (elastic type)
 func NewClient(logSet string, logType string) *LoggerClient {
+	uri = getEnvOrFail("MQ_CONN_STRING")
 	conn = dial()
 	ch = createChannel(conn)
 	q = createQueue(queue, ch)
@@ -37,11 +39,7 @@ func NewClient(logSet string, logType string) *LoggerClient {
 
 // LogWithType allows you to log and override default logType paramter of the logger client
 func (c *LoggerClient) LogWithType(logType string, log map[string]interface{}) error {
-	body := map[string]interface{}{
-		"log_set":  c.LogSet,
-		"log_type": logType,
-		"log":      log,
-	}
+	body := c.createMessageBody(logType, log)
 
 	data, err := json.Marshal(&body)
 	if err != nil {
@@ -64,6 +62,14 @@ func (c *LoggerClient) LogWithType(logType string, log map[string]interface{}) e
 // Log allows you to log a message with default logType
 func (c *LoggerClient) Log(log map[string]interface{}) error {
 	return c.LogWithType(c.LogType, log)
+}
+
+func (c *LoggerClient) createMessageBody(logType string, log map[string]interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"log_set":  c.LogSet,
+		"log_type": logType,
+		"log":      log,
+	}
 }
 
 func dial() *amqp.Connection {
@@ -93,4 +99,13 @@ func failOnError(err error, msg string) {
 		log.Fatalf("%s: %s", msg, err)
 		panic(fmt.Sprintf("%s: %s", msg, err))
 	}
+}
+
+func getEnvOrFail(key string) string {
+	env := os.Getenv(key)
+
+	if env == "" {
+		panic(key)
+	}
+	return env
 }
