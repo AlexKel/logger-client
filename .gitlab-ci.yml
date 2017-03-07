@@ -1,10 +1,6 @@
 stages:
   - test
 
-variables:
-  MQ_CONN_STRING: "amqp://guest:guest@172.16.27.7/"
-  DEBUG: "1"
-
 before_script:
   - whoami
   - docker info
@@ -13,6 +9,6 @@ test:
   stage: test
   script:
     - docker build -t logger-client .
-    - docker run --rm logger-client go test
+    - docker run -e MQ_CONN_STRING="amqp://guest:guest@172.16.27.7/" --rm logger-client go test
   tags:
     - golang
