@@ -24,3 +24,6 @@ test:
 
 after_script:
   - docker rmi logger-client
+
+tags: 
+ - golang

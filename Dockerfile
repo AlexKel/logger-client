@@ -21,3 +21,5 @@ RUN mkdir -p /go/src/github.com/axw/gocov
 RUN git clone https://github.com/axw/gocov /go/src/github.com/axw/gocov
 
 RUN go get gopkg.in/yaml.v2
+
+CMD go test
