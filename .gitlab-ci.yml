@@ -15,15 +15,16 @@ build:
   stage: prepare
   script:
     - docker build -t logger-client .
+  tags:
+    - golang
 
 test: 
   stage: test
   script:
     - docker run --rm logger-client go test
+  tags:
+    - golang
 
 
 after_script:
   - docker rmi logger-client
-
-tags: 
- - golang
