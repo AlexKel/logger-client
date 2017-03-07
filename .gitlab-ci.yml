@@ -1,24 +1,26 @@
-image: docker:latest
-
 stages:
+  - prepare
   - test
 
 variables:
   MQ_CONN_STRING: "amqp://guest:guest@172.16.27.7/"
   DEBUG: "1"
-  DOCKER_DRIVER: overlay
-
-services:
-  - docker:dind
 
 before_script:
+  - whoami
   - docker info
+
+
+build:
+  stage: prepare
+  script:
+    - docker build -t logger-client
 
 test: 
   stage: test
   script:
-    - whoami
-    - docker-compose up
+    - docker run --rm logger-client go test
+
 
 after_script:
-  - docker-compose rm -f | true
+  - docker rmi logger-client
