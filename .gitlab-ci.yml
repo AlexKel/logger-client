@@ -1,5 +1,4 @@
 stages:
-  - prepare
   - test
 
 variables:
@@ -10,21 +9,10 @@ before_script:
   - whoami
   - docker info
 
-
-build:
-  stage: prepare
-  script:
-    - docker build -t logger-client .
-  tags:
-    - golang
-
 test: 
   stage: test
   script:
+    - docker build -t logger-client .
     - docker run --rm logger-client go test
   tags:
     - golang
-
-
-after_script:
-  - docker rmi logger-client
