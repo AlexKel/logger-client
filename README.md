@@ -6,7 +6,7 @@
 
 #### Install
 ```go
-    go get gitlab.devops.ukfast.co.uk/fastbase/logger-client
+    go get http://gopkg.in/alexkel/logger-client.v1
 ```
 
 #### Use
