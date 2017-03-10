@@ -10,4 +10,8 @@
 ```
 
 #### Use
-TBC
+
+```go
+var LoggerClient = loggerclient.NewClient("log_set_name", "log_type_name")
+LoggerClient.Log(map[string]interface{}{"message": msg, "error": err})
+```
