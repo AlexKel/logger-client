@@ -6,7 +6,7 @@
 
 #### Install
 ```go
-    go get http://gopkg.in/alexkel/logger-client.v1
+    go get gopkg.in/alexkel/logger-client.v1
 ```
 
 #### Use
