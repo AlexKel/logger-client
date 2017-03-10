@@ -1,12 +1,12 @@
-# Fastbase Logger Client
-> Allows you to send a log to the fastbase logger microservice
+# AMQP Logger Client
+> Allows you to send a log to the amqp logger
 
 --- 
 ## :rocket: How to use
 
 #### Install
 ```go
-    go get gitlab.devops.ukfast.co.uk/fastbase/logger-client
+    go get gopkg.in/alexkel/logger-client.v1
 ```
 
 #### Use
