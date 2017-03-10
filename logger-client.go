@@ -5,16 +5,20 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/streadway/amqp"
 )
 
 var (
-	uri   = ""
-	queue = "logs"
-	conn  *amqp.Connection
-	ch    *amqp.Channel
-	q     *amqp.Queue
+	uri               = ""
+	queue             = "logs"
+	conn              *amqp.Connection
+	ch                *amqp.Channel
+	q                 *amqp.Queue
+	dialRetryCount    = 0
+	maxConnRetryCount int
 )
 
 // LoggerClient is the strucutre of the logger NewClient
@@ -24,11 +28,14 @@ type LoggerClient struct {
 	LogType string
 }
 
+func init() {
+	setupEnvVars()
+}
+
 // NewClient creates a new client and predefined Log Set and logTypego bu
 // logSet Is the default log set (elastic index)
 // logType Is the type of the log (elastic type)
 func NewClient(logSet string, logType string) *LoggerClient {
-	uri = getEnvOrFail("MQ_CONN_STRING")
 	conn = dial()
 	ch = createChannel(conn)
 	q = createQueue(queue, ch)
@@ -72,7 +79,15 @@ func (c *LoggerClient) createMessageBody(logType string, log map[string]interfac
 
 func dial() *amqp.Connection {
 	conn, err := amqp.Dial(uri)
+	if err != nil && dialRetryCount < maxConnRetryCount {
+		log.Printf("Failed to connect Rabbit MQ at %s, will retry.....%d", uri, dialRetryCount+1)
+		dialRetryCount++
+		time.Sleep(time.Second * 1)
+		return dial()
+	}
 	failOnError(err, "Failed to setup Rabbit MQ connection")
+	dialRetryCount = 0
+	log.Printf("Connected to Rabbit MQ with uri: %s", uri)
 	return conn
 }
 
@@ -106,4 +121,11 @@ func getEnvOrFail(key string) string {
 		panic(key)
 	}
 	return env
+}
+
+func setupEnvVars() {
+	uri = getEnvOrFail("MQ_CONN_STRING")
+	count, err := strconv.Atoi(getEnvOrFail("CONN_RETRY_COUNT"))
+	maxConnRetryCount = count
+	failOnError(err, "CONN_RETRY_COUNT must be an integer type")
 }
