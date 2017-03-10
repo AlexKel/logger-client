@@ -1,4 +1,4 @@
-# Fastbase Logger Client
+# AMQP Logger Client
 > Allows you to send a log to the fastbase logger microservice
 
 --- 
