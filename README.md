@@ -1,5 +1,5 @@
 # AMQP Logger Client
-> Allows you to send a log to the fastbase logger microservice
+> Allows you to send a log to the amqp logger
 
 --- 
 ## :rocket: How to use
